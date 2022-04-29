@@ -1,0 +1,31 @@
+{
+  "extends": [
+    "plugin:import/typescript",
+    "prettier",
+    "plugin:react/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "react",
+    "sort-imports-es6-autofix",
+    "prettier",
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "sort-imports-es6-autofix/sort-imports-es6": [
+      1,
+      {
+        "ignoreCase": false,
+        "ignoreMemberSort": false,
+        "memberSyntaxSortOrder": ["none", "all", "multiple", "single"]
+      }
+    ],
+
+    "react/react-in-jsx-scope": 0,
+    "react/prop-types": 0,
+    "react-hooks/exhaustive-deps": 0,
+    "@typescript-eslint/no-explicit-any": 2,
+    "react/display-name": 0
+  }
+}

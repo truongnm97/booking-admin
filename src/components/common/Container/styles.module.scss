@@ -1,0 +1,51 @@
+.layout-container {
+  height: 100vh;
+
+  .sider {
+    overflow: auto;
+    height: 100vh;
+    position: fixed;
+    left: 0;
+  }
+
+  .logo {
+    display: flex;
+    height: 64px;
+    justify-content: center;
+  }
+
+  .site-layout {
+    margin-left: 200px;
+    transition: all 0.5s;
+    &.collapsed {
+      margin-left: 80px;
+    }
+    .site-layout-background {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 1rem;
+      .trigger {
+        color: white;
+      }
+
+      .account {
+        color: white;
+        cursor: pointer;
+      }
+    }
+  }
+
+  .language {
+    display: flex;
+  }
+
+  .site-page-header {
+    padding: 0;
+  }
+
+  .content {
+    margin: 24px 16px 0;
+    overflow: initial;
+  }
+}
