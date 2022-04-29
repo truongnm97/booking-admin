@@ -13,14 +13,23 @@ export enum Method {
 export enum AdminRoutes {
   LOGIN = '/login',
   DASHBOARD = '/dashboard',
-  CATEGORY = '/category',
+  BOOKING = '/booking',
 }
 
-export enum CategoryRoutes {
-  PROVINCE = 'province',
-  PROVINCE_CREATE = 'province/create',
-  PROVINCE_EDIT = 'province/edit',
-  POST = 'post',
-  POST_CREATE = 'post/create',
-  POST_EDIT = 'post/edit',
+export enum BookingRoutes {
+  BOOKING = 'booking',
+  BOOKING_CREATE = 'booking/create',
+  BOOKING_EDIT = 'booking/edit',
+}
+
+export enum BookingStatus {
+  PENDING_REVIEW = 1,
+  APPROVED = 2,
+  REJECTED = 3,
+}
+
+export enum EventType {
+  HEALTH_TALK = 'HEALTH_TALK',
+  WELLNESS_EVENT = 'WELLNESS_EVENT',
+  FITNESS_ACTIVITIES = 'FITNESS_ACTIVITIES',
 }

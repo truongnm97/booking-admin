@@ -114,34 +114,22 @@ interface IProvince {
   orders?: number
 }
 
-enum BookingStatus {
-  PENDING_REVIEW = 1,
-  APPROVED = 2,
-  REJECTED = 3,
-}
-
-enum EventType {
-  HEALTH_TALK = HEALTH_TALK,
-  WELLNESS_EVENT = WELLNESS_EVENT,
-  FITNESS_ACTIVITIES = FITNESS_ACTIVITIES,
-}
-
 interface IBooking {
   id?: string
   name?: string
-  status?: BookingStatus
+  status?: import('constants/enum').BookingStatus
   location?: string
   proposalDates?: string[]
   selectedDate?: string
-  eventType?: EventType
+  eventType?: import('constants/enum').EventType
 }
 
 interface IBookingRequest {
   id?: string
   name?: string
-  status?: BookingStatus
+  status?: import('constants/enum').BookingStatus
   location?: string
   proposalDates?: string[]
   selectedDate?: string
-  eventType?: EventType
+  eventType?: import('constants/enum').EventType
 }

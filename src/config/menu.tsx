@@ -1,15 +1,16 @@
-import { AdminRoutes, CategoryRoutes } from 'constants/enum'
-import { MENU } from 'constants/locales'
-import { DashboardPage } from 'pages'
+import { AdminRoutes, BookingRoutes } from 'constants/enum'
+import { BOOKING, MENU } from 'constants/locales'
+import { BookingPage, DashboardPage } from 'pages'
 import { getFlatMap, getMap } from 'utils/array'
-import {
-  DashboardOutlined,
-  ReadOutlined,
-  ProfileOutlined,
-} from '@ant-design/icons'
-import { PostForm, PostPage, ProvinceForm, ProvincePage } from 'pages/Category'
+import { DashboardOutlined, ReadOutlined } from '@ant-design/icons'
+import BookingForm from 'pages/Booking/form'
 
-export const WHITELIST_ROUTES: string[] = [AdminRoutes.DASHBOARD]
+export const WHITELIST_ROUTES: string[] = [
+  AdminRoutes.DASHBOARD,
+  AdminRoutes.BOOKING,
+  BookingRoutes.BOOKING_CREATE,
+  BookingRoutes.BOOKING_EDIT,
+]
 
 export const MenuConfig: IMenu[] = [
   {
@@ -22,65 +23,31 @@ export const MenuConfig: IMenu[] = [
     icon: <DashboardOutlined />,
   },
   {
-    id: 'DM',
-    path: AdminRoutes.CATEGORY,
-    name: MENU.CATEGORY,
-    subTitle: MENU.CATEGORY,
-    icon: <ReadOutlined />,
+    id: AdminRoutes.BOOKING,
+    path: AdminRoutes.BOOKING,
+    name: MENU.BOOKING,
+    subTitle: BOOKING.DETAIL,
     auth: true,
-    children: [
-      {
-        id: 'DMTT_ACCEPT',
-        path: CategoryRoutes.PROVINCE,
-        name: MENU.CATEGORY_PROVINCE,
-        subTitle: MENU.CATEGORY_PROVINCE,
-        icon: <ProfileOutlined />,
-        auth: true,
-        component: <ProvincePage />,
-      },
-      {
-        id: 'saveProvince',
-        path: CategoryRoutes.PROVINCE_CREATE,
-        name: MENU.CATEGORY_PROVINCE_CREATE,
-        subTitle: MENU.CATEGORY_PROVINCE_CREATE,
-        auth: true,
-        hide: true,
-        component: <ProvinceForm />,
-      },
-      {
-        id: 'saveProvince',
-        path: `${CategoryRoutes.PROVINCE_EDIT}/:id`,
-        name: MENU.CATEGORY_PROVINCE_EDIT,
-        subTitle: MENU.CATEGORY_PROVINCE_EDIT,
-        auth: true,
-        hide: true,
-        component: <ProvinceForm />,
-      },
-      {
-        id: 'DMQH_ACCEPT',
-        path: CategoryRoutes.POST,
-        name: MENU.CONTENT_POST,
-        icon: <ProfileOutlined />,
-        auth: true,
-        component: <PostPage />,
-      },
-      {
-        id: 'saveDistrict',
-        path: CategoryRoutes.POST_CREATE,
-        name: MENU.CONTENT_POST_CREATE,
-        auth: true,
-        hide: true,
-        component: <PostForm />,
-      },
-      {
-        id: 'saveDistrict',
-        path: `${CategoryRoutes.POST_EDIT}/:id`,
-        name: MENU.CONTENT_POST_EDIT,
-        auth: true,
-        hide: true,
-        component: <PostForm />,
-      },
-    ],
+    component: <BookingPage />,
+    icon: <ReadOutlined />,
+  },
+  {
+    id: BookingRoutes.BOOKING_CREATE,
+    path: BookingRoutes.BOOKING_CREATE,
+    name: BOOKING.CREATE,
+    subTitle: BOOKING.CREATE_DETAIL,
+    auth: true,
+    hide: true,
+    component: <BookingForm />,
+  },
+  {
+    id: BookingRoutes.BOOKING_EDIT,
+    path: `${BookingRoutes.BOOKING_EDIT}/:id`,
+    name: BOOKING.EDIT,
+    subTitle: BOOKING.EDIT_DETAIL,
+    auth: true,
+    hide: true,
+    component: <BookingForm />,
   },
 ]
 

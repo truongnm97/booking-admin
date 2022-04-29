@@ -62,7 +62,7 @@ const authLink = setContext((request, { headers }) => {
 
 const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
-    console.log(`graphQLErrors`, graphQLErrors)
+    message.error(graphQLErrors)
   }
 ) as any
 
