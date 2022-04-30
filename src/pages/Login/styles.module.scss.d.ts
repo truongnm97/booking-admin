@@ -3,6 +3,7 @@ declare namespace StylesModuleScssNamespace {
     background: string
     container: string
     form: string
+    input: string
     label: string
   }
 }

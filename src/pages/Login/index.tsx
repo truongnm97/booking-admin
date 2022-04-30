@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import styles from './styles.module.scss'
 
 interface IForm {
-  username: string
+  email: string
   password: string
   remember: boolean
 }
@@ -18,9 +18,8 @@ const LoginPage = () => {
   const onFinish = (values: IForm) => {
     dispatch(
       loginAction.request({
-        username: values.username,
+        email: values.email,
         password: values.password,
-        loginType: 3,
       })
     )
   }
@@ -42,10 +41,10 @@ const LoginPage = () => {
         </Typography.Title>
         <Form.Item
           label={t(LOGIN.USERNAME)}
-          name="username"
+          name="email"
           rules={[{ required: true, message: t(LOGIN.USERNAME_WARNING) }]}
         >
-          <Input />
+          <Input className={styles.input} />
         </Form.Item>
 
         <Form.Item
@@ -53,7 +52,7 @@ const LoginPage = () => {
           name="password"
           rules={[{ required: true, message: t(LOGIN.PASSWORD_WARNING) }]}
         >
-          <Input.Password />
+          <Input.Password className={styles.input} />
         </Form.Item>
 
         <Form.Item

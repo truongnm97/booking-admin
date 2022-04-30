@@ -41,16 +41,13 @@ const Container = () => {
   const { t, i18n } = useTranslation()
   const { pathname } = useLocation()
   const [selectedMenu, setSelectedMenu] = useState<IMenu>()
-  const token = useAppState(state => state.auth?.token)
-  const getMe = useAppState(state => state.getMe)
+  const token = useAppState(state => state.auth)
 
   const renderMenu = (_menu?: IMenu[], _path?: string) =>
     _menu?.map(val => {
       const path = _path ? `${_path}/${val.path}` : val.path
 
-      const isAuthorized =
-        (getMe?.functionsMap && getMe?.functionsMap[val.id] != null) ||
-        WHITELIST_ROUTES.includes(val.id)
+      const isAuthorized = WHITELIST_ROUTES.includes(val.id)
 
       return val.hide ? null : val.children ? (
         <Menu.SubMenu

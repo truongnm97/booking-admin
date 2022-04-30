@@ -1,10 +1,10 @@
 import { authActions } from 'redux/actions'
 import { createReducer } from '@reduxjs/toolkit'
 
-const authReducer = createReducer<IAuthReducer | null>(null, builder =>
+const authReducer = createReducer<string | null>(null, builder =>
   builder
     .addCase(authActions.loginAction.success, (token, action) => {
-      return action.payload.data
+      return action.payload.access_token || null
     })
     .addCase(authActions.loginAction.failure, () => {
       return null

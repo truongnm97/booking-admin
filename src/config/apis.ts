@@ -4,8 +4,7 @@ export const GraphqlEndpoint = {
 }
 
 export const RestAPI = {
-  LOGIN: `${process.env.REACT_APP_BASE_URL}/api/auth/login`,
-  LOGOUT: `${process.env.REACT_APP_BASE_URL}/api/auth/logout`,
-  REFRESH_TOKEN: `${process.env.REACT_APP_BASE_URL}/api/auth/refresh-token`,
-  GET_ME: `${process.env.REACT_APP_BASE_URL}/api/account/api/v1/account/getMe`,
+  LOGIN: `${process.env.REACT_APP_BASE_URL}/auth/signIn`,
+  LOGOUT: `${process.env.REACT_APP_BASE_URL}/auth/signOut`,
+  GET_ME: `${process.env.REACT_APP_BASE_URL}/users/me`,
 }

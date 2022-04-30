@@ -1,16 +1,15 @@
 import { createAction } from '@reduxjs/toolkit'
 
 export interface ILoginRequestPayload {
-  username: string
+  email: string
   password: string
-  loginType: 3
 }
 
 export const loginAction = {
   request: createAction<ILoginRequestPayload, '@AUTH/LOGIN/REQUEST'>(
     '@AUTH/LOGIN/REQUEST'
   ),
-  success: createAction<IResponse<IUser>, '@AUTH/LOGIN/SUCCESS'>(
+  success: createAction<ILoginResponse, '@AUTH/LOGIN/SUCCESS'>(
     '@AUTH/LOGIN/SUCCESS'
   ),
   failure: createAction<Error, '@AUTH/LOGIN/FAILURE'>('@AUTH/LOGIN/FAILURE'),
@@ -28,9 +27,7 @@ export const logoutAction = {
 
 export const getMeAction = {
   request: createAction<undefined, '@AUTH/GET_ME'>('@AUTH/GET_ME'),
-  success: createAction<IResponse<IGetMe>, '@AUTH/GET_ME/SUCCESS'>(
-    '@AUTH/GET_ME/SUCCESS'
-  ),
+  success: createAction<IGetMe, '@AUTH/GET_ME/SUCCESS'>('@AUTH/GET_ME/SUCCESS'),
   failure: createAction<Error, '@AUTH/GET_ME/FAILURE'>('@AUTH/GET_ME/FAILURE'),
   cancel: createAction<undefined, '@AUTH/GET_ME/CANCEL'>('@AUTH/GET_ME/CANCEL'),
 }

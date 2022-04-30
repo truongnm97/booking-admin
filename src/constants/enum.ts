@@ -23,13 +23,18 @@ export enum BookingRoutes {
 }
 
 export enum BookingStatus {
-  PENDING_REVIEW = 1,
-  APPROVED = 2,
-  REJECTED = 3,
+  PENDING_REVIEW = 'PENDING_REVIEW',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
 }
 
 export enum EventType {
   HEALTH_TALK = 'HEALTH_TALK',
   WELLNESS_EVENT = 'WELLNESS_EVENT',
   FITNESS_ACTIVITIES = 'FITNESS_ACTIVITIES',
+}
+
+export enum Role {
+  ADMIN = 'ADMIN',
+  USER = 'USER',
 }

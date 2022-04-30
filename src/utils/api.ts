@@ -17,21 +17,23 @@ export interface InvokeApiProps {
   config?: AxiosRequestConfig
 }
 
-export const getHeaders = () => {
-  const authToken = store.getState().auth?.token
-
-  let headers: RequestInit['headers'] = {
+const axiosProvider = axios.create({
+  headers: {
     Accept: 'application/json',
     'Content-Type': 'application/json',
     'Cache-Control': 'no-cache',
     'Access-Control-Allow-Origin': '*',
-  }
+  },
+})
 
-  if (authToken) {
-    headers.Token = authToken
-  }
+export const getHeaders = () => {
+  const authToken = store.getState().auth
 
-  return headers
+  return authToken
+    ? {
+        Authorization: `Bearer ${authToken}`,
+      }
+    : null
 }
 
 /**
@@ -65,28 +67,16 @@ export const invokeApi = async ({
   }
 
   try {
-    const res: AxiosResponse<IResponse> = await axios({
+    const res: AxiosResponse<IResponse> = await axiosProvider({
       ...config,
       url: finalUrl,
     })
 
-    if (res.status >= 400) {
-      const reason = `${res.status} - ${res.statusText}`
-
-      throw new Error(reason)
-    }
-
-    if (!res.data.status) {
-      const reason = `${res.data.code} - ${res.data.message}`
-
-      throw new Error(reason)
-    }
-
     return res.data
   } catch (err) {
-    console.error(err)
-    message.error((<Error>err).message)
-    return new Error((<Error>err).message)
+    console.error((<IResponseError>err).response.data?.message)
+    message.error((<IResponseError>err).response.data?.message)
+    return new Error((<IResponseError>err).response.data?.message)
   }
 }
 
@@ -98,7 +88,7 @@ export default async function authRequest<
   Response = IResponse,
   Request = unknown
 >(url: string, config: AxiosRequestConfig<Request>) {
-  return axios({
+  return axiosProvider({
     ...config,
     headers: {
       ...getHeaders(),

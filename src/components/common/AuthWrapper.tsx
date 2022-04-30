@@ -20,7 +20,7 @@ const AuthWrapper: React.FC<Props> = ({
 }) => {
   const navigate = useNavigate()
   const { t } = useTranslation()
-  const token = useAppState(state => state.auth?.token)
+  const token = useAppState(state => state.auth)
   const getMe = useAppState(state => state.getMe)
 
   const isAuthenticated = Boolean(token)

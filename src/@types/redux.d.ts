@@ -1,10 +1,8 @@
-interface IAuthReducer extends IUser {}
+interface IAuthReducer extends ILoginResponse {}
 
-interface IGetMeReducer extends IGetMe {
-  functionsMap: Record<string, IFunction>
-}
+interface IGetMeReducer extends IGetMe {}
 
 interface IAppState {
-  auth: IUser | null
+  auth: string | null
   getMe: IGetMeReducer | null
 }

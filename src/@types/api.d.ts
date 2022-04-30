@@ -5,6 +5,16 @@ interface IResponse<T = any> {
   message?: string
 }
 
+interface IError {
+  error: string
+  message: string
+  statusCode: number
+}
+
+interface IResponseError {
+  response: IResponse<IError>
+}
+
 interface IRequestProps<T> extends RequestInit {
   data?: T
 }
@@ -26,101 +36,29 @@ interface IFetcherRequest {
   queryConfig?: import('react-query').UseQueryOptions<any>
 }
 
-interface IFunction {
-  id: string
-  functionCode: string
-  name: string
-  parentId?: string
-}
-
-interface IUserFacilities {
-  id: string
-  userId?: string
-  facilityId?: string
-  facilityCode?: string
-  status?: number
-  createDate?: string
-  createUserId?: string
-  createUser?: string
-  updateUser?: string
-  updateUserId?: string
-  updateDate?: string
-}
-
-interface IUser {
-  id: string
-  userTypeId?: string
-  name?: string
-  userName?: string
-  password?: string
-  phone?: string
-  email?: string
-  avatar?: string
-  address?: string
-  sex?: string
-  birthDate?: string
-  facilityId?: string
-  status?: number
-  createDate?: string
-  createUser?: string
-  createUserId?: string
-  updateDate?: string
-  updateUser?: string
-  updateUserId?: string
-  userGroups?: any[]
-  userFunctions?: any[]
-  userWeb?: string
-  passWeb?: string
-  notifys?: { appType: number; isRead: number; numOfNotify: number }[]
-  staffCode?: string
-  agentId?: string
-  device?: string
-  districtId?: string
-  domain?: string
-  functionCode?: string
-  infoComplete?: boolean
-  loginType?: number
-  organization?: string
-  os?: string
-  otpCode?: string
-  provinceId?: string
-  refreshToken?: string
-  sessionCount?: number
-  token?: string
-  tokenVcc?: string
-  topic?: string
-  userType?: string
-  username?: string
-  wardId?: string
+interface ILoginResponse {
+  access_token: string
 }
 
 interface IGetMe {
-  user: IUser | null
-  functions: IFunction[]
-  userFacilities: IUserFacilities[]
-}
-
-interface IProvince {
-  code?: string
-  name?: string
-  status?: number
-  createDate?: string
-  createUser?: string
-  createUserId?: string
   id?: string
-  updateDate?: string
-  updateUser?: string
-  updateUserId?: string
-  orders?: number
+  email: string
+  hash: string
+  firstName?: string
+  lasttName?: string
+  role: import('constants/enum').Role
+  createdAt: string
+  updatedAt: string
 }
 
 interface IBooking {
   id?: string
   name?: string
-  status?: import('constants/enum').BookingStatus
+  description?: string
   location?: string
   proposalDates?: string[]
   selectedDate?: string
+  status?: import('constants/enum').BookingStatus
   eventType?: import('constants/enum').EventType
 }
 

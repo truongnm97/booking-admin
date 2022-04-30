@@ -5,14 +5,13 @@ import { createApiSaga } from 'utils/saga'
 
 export const loginSaga = createApiSaga<typeof authActions.loginAction>(
   authActions.loginAction,
-  ({ username, password, loginType }) => ({
+  ({ email, password }) => ({
     url: RestAPI.LOGIN,
     config: {
       method: Method.POST,
       data: {
-        username,
+        email,
         password,
-        loginType,
       },
     },
   })
