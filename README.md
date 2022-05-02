@@ -1,5 +1,12 @@
 # Fullerton Healthcare Booking Admin
 
+## Accounts
+
+- Admin: admin@gmail.com/123456
+- User:
+  - hr1@gmail.com/123456
+  - hr2@gmail.com/123456
+
 ## Requirement
 
 - Recommended editor: [VS Code](https://code.visualstudio.com/)
