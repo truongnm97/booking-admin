@@ -48,7 +48,9 @@ const Container = () => {
     _menu?.map(val => {
       const path = _path ? `${_path}/${val.path}` : val.path
 
-      const isAuthorized = WHITELIST_ROUTES.includes(val.id)
+      const isAuthorized =
+        WHITELIST_ROUTES.includes(val.id) ||
+        (me?.role && val.role?.includes(me.role))
 
       return val.hide ? null : val.children ? (
         <Menu.SubMenu

@@ -64,7 +64,7 @@ export function useEditEventType(id?: string) {
     AxiosResponse<IEventType>,
     IResponseError,
     AxiosRequestConfig<IEventTypeRequest>
-  >(request => authRequest(url, { ...request, method: Method.PUT }), {
+  >(request => authRequest(url, { ...request, method: Method.PATCH }), {
     onSuccess: (data, variables) => {
       void queryClient.setQueryData([url, Method.POST, variables], { data })
     },

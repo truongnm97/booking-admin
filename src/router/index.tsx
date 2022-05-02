@@ -5,16 +5,20 @@ import { COMMON } from 'constants/locales'
 import { LoginPage } from 'pages'
 import { MenuConfig, WHITELIST_ROUTES } from 'config/menu'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { useAppState } from 'hooks'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
 function Router() {
   const { t } = useTranslation()
   const navigate = useNavigate()
+  const me = useAppState(state => state.getMe)
 
   const renderRoutes = (_menu: IMenu[]) =>
     _menu.map(val => {
-      const isAuthorized = WHITELIST_ROUTES.includes(val.id)
+      const isAuthorized =
+        WHITELIST_ROUTES.includes(val.id) ||
+        (me?.role && val.role?.includes(me.role))
 
       return val.children ? (
         <Route

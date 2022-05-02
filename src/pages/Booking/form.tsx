@@ -1,5 +1,5 @@
+import { BOOKING, FORM } from 'constants/locales'
 import { Button, DatePicker, Form, Input, Select, message } from 'antd'
-import { FORM } from 'constants/locales'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import {
   useCreateBooking,
@@ -95,7 +95,7 @@ const BookingForm = () => {
       </Form.Item>
       <Form.Item
         name="location"
-        label="Location"
+        label={t(BOOKING.FORM_FIELD_LOCATION)}
         required
         rules={[{ required: true, message: t(FORM.REQUIRED) }]}
       >
@@ -103,7 +103,7 @@ const BookingForm = () => {
       </Form.Item>
       <Form.Item
         name="eventTypeId"
-        label="Event Type"
+        label={t(BOOKING.FORM_FIELD_EVENT_TYPE)}
         required
         rules={[{ required: true, message: t(FORM.REQUIRED) }]}
       >
@@ -121,7 +121,7 @@ const BookingForm = () => {
             {fields.map((field, index) => (
               <Form.Item
                 {...(index === 0 ? layout : layoutWithOutLabel)}
-                label={index === 0 ? 'Proposal Date' : ''}
+                label={index === 0 ? t(BOOKING.FORM_FIELD_PROPOSAL_DATE) : ''}
                 required
                 key={field.key}
               >
@@ -133,6 +133,7 @@ const BookingForm = () => {
                 >
                   <DatePicker
                     showTime
+                    placeholder={t(FORM.PLACEHOLDER_SELECT_DATE)}
                     onChange={() => {
                       if (fields.length < 3) add()
                     }}
@@ -147,14 +148,14 @@ const BookingForm = () => {
               </Form.Item>
             ))}
             {fields.length < 3 && (
-              <Form.Item wrapperCol={{ span: 3, offset: 6 }}>
+              <Form.Item wrapperCol={{ span: 4, offset: 6 }}>
                 <Button
                   type="dashed"
                   onClick={() => add()}
                   block
                   icon={<PlusOutlined />}
                 >
-                  Add proposal date
+                  {t(BOOKING.FORM_FIELD_ADD_PROPOSAL_DATE)}
                 </Button>
               </Form.Item>
             )}
@@ -163,7 +164,7 @@ const BookingForm = () => {
       </Form.List>
       <Form.Item wrapperCol={{ span: 2, offset: 6 }}>
         <Button type="primary" htmlType="submit">
-          Submit
+          {t(FORM.SUBMIT)}
         </Button>
       </Form.Item>
     </Form>

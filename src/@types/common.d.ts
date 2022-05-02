@@ -9,4 +9,5 @@ interface IMenu {
   icon?: React.ReactElement
   component?: React.ReactElement
   auth?: boolean
+  role?: import('constants/enum').Role[]
 }
