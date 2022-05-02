@@ -26,8 +26,8 @@ import {
 import { authActions } from 'redux/actions'
 import { getMeAction } from 'redux/actions/auth'
 import { useAppState } from 'hooks'
+import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
 import styles from './styles.module.scss'
@@ -44,46 +44,52 @@ const Container = () => {
   const token = useAppState(state => state.auth)
   const me = useAppState(state => state.getMe)
 
-  const renderMenu = (_menu?: IMenu[], _path?: string) =>
-    _menu?.map(val => {
-      const path = _path ? `${_path}/${val.path}` : val.path
+  const renderMenu = useCallback(
+    (_menu?: IMenu[], _path?: string) =>
+      _menu?.map(val => {
+        const path = _path ? `${_path}/${val.path}` : val.path
 
-      const isAuthorized =
-        WHITELIST_ROUTES.includes(val.id) ||
-        (me?.role && val.role?.includes(me.role))
+        const isAuthorized =
+          WHITELIST_ROUTES.includes(val.id) ||
+          (me?.role && val.role?.includes(me.role))
 
-      return val.hide ? null : val.children ? (
-        <Menu.SubMenu
-          key={val.id}
-          icon={val.icon}
-          title={val.name && t(val.name)}
-        >
-          {renderMenu(val.children, path)}
-        </Menu.SubMenu>
-      ) : isAuthorized ? (
-        <Menu.Item key={val.id} icon={val.icon}>
-          <Link to={path ?? '/'}>{val.name && t(val.name)}</Link>
-        </Menu.Item>
-      ) : null
-    })
+        return val.hide ? null : val.children ? (
+          <Menu.SubMenu
+            key={val.id}
+            icon={val.icon}
+            title={val.name && t(val.name)}
+          >
+            {renderMenu(val.children, path)}
+          </Menu.SubMenu>
+        ) : isAuthorized ? (
+          <Menu.Item key={val.id} icon={val.icon}>
+            <Link to={path ?? '/'}>{val.name && t(val.name)}</Link>
+          </Menu.Item>
+        ) : null
+      }),
+    [me]
+  )
 
-  const renderBreadcrumb = (_menu?: IMenu[]) => {
-    const pathSnippets = pathname
-      .split('/')
-      .filter(Boolean)
-      .map((val, idx) => (idx === 0 ? `/${val}` : val))
+  const renderBreadcrumb = useCallback(
+    (_menu?: IMenu[]) => {
+      const pathSnippets = pathname
+        .split('/')
+        .filter(Boolean)
+        .map((val, idx) => (idx === 0 ? `/${val}` : val))
 
-    return (
-      <Breadcrumb>
-        {pathSnippets?.map(val => {
-          const title = MenuConfigMap[val]?.name
-          return (
-            <Breadcrumb.Item key={val}>{title && t(title)}</Breadcrumb.Item>
-          )
-        })}
-      </Breadcrumb>
-    )
-  }
+      return (
+        <Breadcrumb>
+          {pathSnippets?.map(val => {
+            const title = MenuConfigMap[val]?.name
+            return (
+              <Breadcrumb.Item key={val}>{title && t(title)}</Breadcrumb.Item>
+            )
+          })}
+        </Breadcrumb>
+      )
+    },
+    [pathname]
+  )
 
   const onLogout = () => {
     dispatch(authActions.logoutAction.request())

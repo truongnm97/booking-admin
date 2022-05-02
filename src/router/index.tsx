@@ -6,6 +6,7 @@ import { LoginPage } from 'pages'
 import { MenuConfig, WHITELIST_ROUTES } from 'config/menu'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { useAppState } from 'hooks'
+import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -14,42 +15,45 @@ function Router() {
   const navigate = useNavigate()
   const me = useAppState(state => state.getMe)
 
-  const renderRoutes = (_menu: IMenu[]) =>
-    _menu.map(val => {
-      const isAuthorized =
-        WHITELIST_ROUTES.includes(val.id) ||
-        (me?.role && val.role?.includes(me.role))
+  const renderRoutes = useCallback(
+    (_menu: IMenu[]) =>
+      _menu.map(val => {
+        const isAuthorized =
+          WHITELIST_ROUTES.includes(val.id) ||
+          (me?.role && val.role?.includes(me.role))
 
-      return val.children ? (
-        <Route
-          key={val.id}
-          path={val.path}
-          element={
-            val.auth ? (
-              <AuthWrapper>{val.component ?? <Outlet />}</AuthWrapper>
-            ) : (
-              val.component ?? <Outlet />
-            )
-          }
-        >
-          {renderRoutes(val.children)}
-        </Route>
-      ) : (
-        <Route
-          key={val.id}
-          path={val.path}
-          element={
-            val.auth ? (
-              <AuthWrapper isAuthorized={isAuthorized}>
-                {val.component}
-              </AuthWrapper>
-            ) : (
-              val.component
-            )
-          }
-        />
-      )
-    })
+        return val.children ? (
+          <Route
+            key={val.id}
+            path={val.path}
+            element={
+              val.auth ? (
+                <AuthWrapper>{val.component ?? <Outlet />}</AuthWrapper>
+              ) : (
+                val.component ?? <Outlet />
+              )
+            }
+          >
+            {renderRoutes(val.children)}
+          </Route>
+        ) : (
+          <Route
+            key={val.id}
+            path={val.path}
+            element={
+              val.auth ? (
+                <AuthWrapper isAuthorized={isAuthorized}>
+                  {val.component}
+                </AuthWrapper>
+              ) : (
+                val.component
+              )
+            }
+          />
+        )
+      }),
+    [me]
+  )
 
   return (
     <Routes>
