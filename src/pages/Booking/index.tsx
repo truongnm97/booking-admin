@@ -1,6 +1,6 @@
 import { BOOKING, COMMON } from 'constants/locales'
-import { BookingStatus, EventType, Role } from 'constants/enum'
-import { BookingStatusOptions, EventTypeOptions } from './utils'
+import { BookingStatus, Role } from 'constants/enum'
+import { BookingStatusOptions } from './utils'
 import {
   Button,
   Popconfirm,
@@ -20,6 +20,7 @@ import {
 } from '@ant-design/icons'
 import { ColumnsType } from 'antd/lib/table'
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/datetime'
+import { truncate } from 'lodash'
 import { useAppState } from 'hooks'
 import {
   useApproveBooking,
@@ -150,6 +151,7 @@ const BookingPage = () => {
       dataIndex: 'status',
       align: 'center',
       width: 80,
+      key: 'status',
       render: (status: BookingStatus | undefined) =>
         status &&
         BookingStatusOptions[status] && (
@@ -159,24 +161,22 @@ const BookingPage = () => {
         ),
     },
     {
-      title: t(BOOKING.TABLE_TITLE_LOCATION),
+      title: t(BOOKING.TABLE_TITLE_EVENT_TYPE),
       dataIndex: 'eventType',
       align: 'center',
       width: 80,
-      render: (eventType: EventType | undefined) =>
-        eventType &&
-        EventTypeOptions[eventType] && (
-          <Tag color="default">{t(EventTypeOptions[eventType].label)}</Tag>
-        ),
+      render: (_, record) => (
+        <Tag color="default">{record.eventType?.name}</Tag>
+      ),
+    },
+    {
+      title: t(BOOKING.TABLE_TITLE_LOCATION),
+      dataIndex: 'location',
+      width: 120,
+      ellipsis: true,
     },
     {
       title: t(BOOKING.TABLE_TITLE_PROPOSAL_DATE),
-      dataIndex: 'location',
-      ellipsis: true,
-      width: 150,
-    },
-    {
-      title: t(BOOKING.TABLE_TITLE_CREATED_BY),
       dataIndex: 'proposalDates',
       width: 120,
       render: (value: string[] | undefined, record) => (
@@ -201,7 +201,11 @@ const BookingPage = () => {
       title: t(BOOKING.TABLE_TITLE_REASON_REJECTION),
       dataIndex: 'rejectReason',
       width: 120,
-      ellipsis: true,
+      render: value => (
+        <Tooltip placement="topLeft" title={value}>
+          {truncate(value, { length: 50 })}
+        </Tooltip>
+      ),
     },
     {
       title: t(BOOKING.TABLE_TITLE_FUNCTION),
@@ -251,7 +255,7 @@ const BookingPage = () => {
 
   if (me?.role === Role.ADMIN) {
     columns.splice(columns.length - 2, 0, {
-      title: 'Created By',
+      title: t(BOOKING.TABLE_TITLE_CREATED_BY),
       dataIndex: 'user',
       width: 100,
       render: (user: IGetMe | undefined) => {

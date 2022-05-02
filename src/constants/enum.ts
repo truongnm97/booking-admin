@@ -28,12 +28,6 @@ export enum BookingStatus {
   REJECTED = 'REJECTED',
 }
 
-export enum EventType {
-  HEALTH_TALK = 'HEALTH_TALK',
-  WELLNESS_EVENT = 'WELLNESS_EVENT',
-  FITNESS_ACTIVITIES = 'FITNESS_ACTIVITIES',
-}
-
 export enum Role {
   ADMIN = 'ADMIN',
   USER = 'USER',

@@ -64,7 +64,10 @@ interface IBooking {
   proposalDates?: string[]
   selectedDate?: string
   status?: import('constants/enum').BookingStatus
-  eventType?: import('constants/enum').EventType
+  eventTypeId?: string
+  eventType?: IEventType
+  createdAt?: string
+  updatedAt?: string
 }
 
 interface IBookingRequest {
@@ -74,10 +77,20 @@ interface IBookingRequest {
   location?: string
   proposalDates?: string[]
   selectedDate?: string
-  eventType?: import('constants/enum').EventType
+  eventTypeId?: string
   rejectReason?: string
 }
 
+interface IEventType {
+  id?: string
+  name?: string
+  createdAt?: string
+  updatedAt?: string
+}
+
+interface IEventTypeRequest {
+  name?: string
+}
 interface IApproveBookingRequest {
   id?: string
   selectedDate?: string

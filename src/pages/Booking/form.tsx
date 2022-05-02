@@ -1,6 +1,4 @@
 import { Button, DatePicker, Form, Input, Select, message } from 'antd'
-import { EventType } from 'constants/enum'
-import { EventTypeOptions } from './utils'
 import { FORM } from 'constants/locales'
 import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import {
@@ -9,6 +7,7 @@ import {
   useGetBooking,
 } from 'apis/rest/booking'
 import { useEffect } from 'react'
+import { useGetEventTypes } from 'apis/rest/eventType'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import moment from 'moment'
@@ -24,7 +23,7 @@ const layoutWithOutLabel = {
 
 interface IBookingForm {
   location: string
-  eventType: EventType
+  eventTypeId: string
   proposalDates: moment.Moment[]
 }
 
@@ -40,10 +39,10 @@ const BookingForm = () => {
       enabled: false,
     },
   })
+  const { data: eventTypes } = useGetEventTypes()
   const navigate = useNavigate()
 
   const onFinish = (data: IBookingForm) => {
-    console.log('data', data)
     if (id) {
       editBooking(
         {
@@ -103,15 +102,15 @@ const BookingForm = () => {
         <Input />
       </Form.Item>
       <Form.Item
-        name="eventType"
+        name="eventTypeId"
         label="Event Type"
         required
         rules={[{ required: true, message: t(FORM.REQUIRED) }]}
       >
         <Select>
-          {Object.entries(EventTypeOptions).map(([key, { label }]) => (
-            <Select.Option key={key} value={key}>
-              {t(label)}
+          {eventTypes?.data.map(eventType => (
+            <Select.Option key={eventType.id} value={eventType.id ?? ''}>
+              {eventType.name}
             </Select.Option>
           ))}
         </Select>
