@@ -1,7 +1,9 @@
 import { Method } from 'constants/enum'
 import { RestAPI } from 'config/apis'
 import { authActions } from 'redux/actions'
+import { client } from 'config/apollo'
 import { createApiSaga } from 'utils/saga'
+import { queryClient } from 'config/cached'
 
 export const loginSaga = createApiSaga<typeof authActions.loginAction>(
   authActions.loginAction,
@@ -19,12 +21,16 @@ export const loginSaga = createApiSaga<typeof authActions.loginAction>(
 
 export const logoutSaga = createApiSaga<typeof authActions.logoutAction>(
   authActions.logoutAction,
-  () => ({
-    url: RestAPI.LOGOUT,
-    config: {
-      method: Method.POST,
-    },
-  })
+  () => {
+    client.clearStore()
+    queryClient.clear()
+    return {
+      url: RestAPI.LOGOUT,
+      config: {
+        method: Method.POST,
+      },
+    }
+  }
 )
 
 export const getMeSaga = createApiSaga<typeof authActions.getMeAction>(

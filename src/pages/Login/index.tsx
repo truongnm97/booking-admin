@@ -31,7 +31,7 @@ const LoginPage = () => {
         name="basic"
         labelCol={{ span: 8 }}
         wrapperCol={{ span: 16 }}
-        initialValues={{ username: '', password: '', remember: true }}
+        initialValues={{ email: '', password: '', remember: true }}
         onFinish={onFinish}
         autoComplete="off"
         className={styles.form}
@@ -40,9 +40,12 @@ const LoginPage = () => {
           {t(LOGIN.LABEL)}
         </Typography.Title>
         <Form.Item
-          label={t(LOGIN.USERNAME)}
+          label={t(LOGIN.EMAIL)}
           name="email"
-          rules={[{ required: true, message: t(LOGIN.USERNAME_WARNING) }]}
+          rules={[
+            { required: true, message: t(LOGIN.USERNAME_WARNING) },
+            { type: 'email', message: t(LOGIN.INVALID_EMAIL) },
+          ]}
         >
           <Input className={styles.input} />
         </Form.Item>

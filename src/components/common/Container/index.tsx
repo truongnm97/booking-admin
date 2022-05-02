@@ -42,6 +42,7 @@ const Container = () => {
   const { pathname } = useLocation()
   const [selectedMenu, setSelectedMenu] = useState<IMenu>()
   const token = useAppState(state => state.auth)
+  const me = useAppState(state => state.getMe)
 
   const renderMenu = (_menu?: IMenu[], _path?: string) =>
     _menu?.map(val => {
@@ -181,7 +182,7 @@ const Container = () => {
               <Space>
                 <span>
                   <span>Hi, </span>
-                  <span>{'admin'}</span>
+                  <span>{`${me?.firstName ?? ''} ${me?.lastName ?? ''}`}</span>
                 </span>
                 <Avatar />
               </Space>

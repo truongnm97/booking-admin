@@ -7,8 +7,9 @@ import { ConfigProvider, Result, Spin } from 'antd'
 import { Lang } from 'constants/enum'
 import { PersistGate } from 'redux-persist/integration/react'
 import { Provider } from 'react-redux'
-import { QueryClient, QueryClientProvider } from 'react-query'
+import { QueryClientProvider } from 'react-query'
 import { client } from 'config/apollo'
+import { queryClient } from 'config/cached'
 import React, { Suspense } from 'react'
 import ReactDOM from 'react-dom'
 import Router from './router'
@@ -17,16 +18,6 @@ import i18n from './config/i18n'
 import reportWebVitals from './reportWebVitals'
 import store, { persistor } from 'redux/store'
 import viVN from 'antd/lib/locale/vi_VN'
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: false,
-      refetchOnWindowFocus: false,
-    },
-    mutations: {},
-  },
-})
 
 ReactDOM.render(
   <React.StrictMode>

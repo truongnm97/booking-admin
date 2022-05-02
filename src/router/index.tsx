@@ -62,7 +62,7 @@ function Router() {
         path="/"
         element={
           <AuthWrapper isAuthorized>
-            <Navigate to={AdminRoutes.DASHBOARD} />
+            <Navigate to={AdminRoutes.BOOKING} />
           </AuthWrapper>
         }
       />

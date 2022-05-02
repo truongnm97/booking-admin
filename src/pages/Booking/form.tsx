@@ -1,4 +1,8 @@
-import { Button, Form, Input, InputNumber, message } from 'antd'
+import { Button, DatePicker, Form, Input, Select, message } from 'antd'
+import { EventType } from 'constants/enum'
+import { EventTypeOptions } from './utils'
+import { FORM } from 'constants/locales'
+import { MinusCircleOutlined, PlusOutlined } from '@ant-design/icons'
 import {
   useCreateBooking,
   useEditBooking,
@@ -6,15 +10,28 @@ import {
 } from 'apis/rest/booking'
 import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import moment from 'moment'
 
 const layout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 18 },
 }
 
+const layoutWithOutLabel = {
+  wrapperCol: { offset: 6, span: 18 },
+}
+
+interface IBookingForm {
+  location: string
+  eventType: EventType
+  proposalDates: moment.Moment[]
+}
+
 const BookingForm = () => {
+  const { t } = useTranslation()
   const { id } = useParams()
-  const [form] = Form.useForm<IBooking>()
+  const [form] = Form.useForm<IBookingForm>()
 
   const { mutate: createBooking } = useCreateBooking()
   const { mutate: editBooking } = useEditBooking(id)
@@ -25,11 +42,15 @@ const BookingForm = () => {
   })
   const navigate = useNavigate()
 
-  const onFinish = (data: IBooking) => {
+  const onFinish = (data: IBookingForm) => {
+    console.log('data', data)
     if (id) {
       editBooking(
         {
-          data,
+          data: {
+            ...data,
+            proposalDates: data.proposalDates.map(date => date.toJSON()),
+          },
         },
         {
           onSuccess: () => {
@@ -41,7 +62,10 @@ const BookingForm = () => {
     } else {
       createBooking(
         {
-          data,
+          data: {
+            ...data,
+            proposalDates: data.proposalDates.map(date => date.toJSON()),
+          },
         },
         {
           onSuccess: () => {
@@ -67,19 +91,78 @@ const BookingForm = () => {
 
   return (
     <Form {...layout} initialValues={data} form={form} onFinish={onFinish}>
-      <Form.Item name="id" label="Id">
+      <Form.Item name="id" label="Id" hidden>
         <Input disabled />
       </Form.Item>
-      <Form.Item name="userId" label="User Id">
-        <InputNumber />
-      </Form.Item>
-      <Form.Item name="body" label="Body">
-        <Input.TextArea rows={5} />
-      </Form.Item>
-      <Form.Item name="title" label="Title">
+      <Form.Item
+        name="location"
+        label="Location"
+        required
+        rules={[{ required: true, message: t(FORM.REQUIRED) }]}
+      >
         <Input />
       </Form.Item>
-      <Form.Item wrapperCol={{ ...layout.wrapperCol, offset: 8 }}>
+      <Form.Item
+        name="eventType"
+        label="Event Type"
+        required
+        rules={[{ required: true, message: t(FORM.REQUIRED) }]}
+      >
+        <Select>
+          {Object.entries(EventTypeOptions).map(([key, { label }]) => (
+            <Select.Option key={key} value={key}>
+              {t(label)}
+            </Select.Option>
+          ))}
+        </Select>
+      </Form.Item>
+      <Form.List name="proposalDates" initialValue={[null]}>
+        {(fields, { add, remove }) => (
+          <>
+            {fields.map((field, index) => (
+              <Form.Item
+                {...(index === 0 ? layout : layoutWithOutLabel)}
+                label={index === 0 ? 'Proposal Date' : ''}
+                required
+                key={field.key}
+              >
+                <Form.Item
+                  {...field}
+                  validateTrigger={['onChange', 'onBlur']}
+                  rules={[{ required: true, message: t(FORM.REQUIRED) }]}
+                  noStyle
+                >
+                  <DatePicker
+                    showTime
+                    onChange={() => {
+                      if (fields.length < 3) add()
+                    }}
+                  />
+                </Form.Item>
+                {fields.length > 1 && (
+                  <MinusCircleOutlined
+                    onClick={() => remove(field.name)}
+                    style={{ marginLeft: 8 }}
+                  />
+                )}
+              </Form.Item>
+            ))}
+            {fields.length < 3 && (
+              <Form.Item wrapperCol={{ span: 3, offset: 6 }}>
+                <Button
+                  type="dashed"
+                  onClick={() => add()}
+                  block
+                  icon={<PlusOutlined />}
+                >
+                  Add proposal date
+                </Button>
+              </Form.Item>
+            )}
+          </>
+        )}
+      </Form.List>
+      <Form.Item wrapperCol={{ span: 2, offset: 6 }}>
         <Button type="primary" htmlType="submit">
           Submit
         </Button>

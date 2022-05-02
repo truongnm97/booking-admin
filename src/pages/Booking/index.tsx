@@ -1,101 +1,157 @@
-import { BookingStatus, EventType } from 'constants/enum'
-import { Button, Popconfirm, Space, Table, Tag, message } from 'antd'
-import { COMMON } from 'constants/locales'
-import { CheckOutlined, CloseOutlined, PlusOutlined } from '@ant-design/icons'
+import { BOOKING, COMMON } from 'constants/locales'
+import { BookingStatus, EventType, Role } from 'constants/enum'
+import { BookingStatusOptions, EventTypeOptions } from './utils'
+import {
+  Button,
+  Popconfirm,
+  Space,
+  Table,
+  TablePaginationConfig,
+  Tag,
+  Tooltip,
+  message,
+} from 'antd'
+import {
+  CheckCircleTwoTone,
+  CheckOutlined,
+  CloseOutlined,
+  DeleteOutlined,
+  PlusOutlined,
+} from '@ant-design/icons'
 import { ColumnsType } from 'antd/lib/table'
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/datetime'
-import { format } from 'date-fns'
-import { useDeleteBooking, useGetBookings } from 'apis/rest/booking'
-import { useNavigate } from 'react-router-dom'
+import { useAppState } from 'hooks'
+import {
+  useApproveBooking,
+  useCancelBooking,
+  useGetBookings,
+  useRejectBooking,
+} from 'apis/rest/booking'
+import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import BookingModal from './modal'
+import moment from 'moment'
 import styles from './styles.module.scss'
-
-const mockData: IBooking[] = [
-  {
-    id: '1',
-    name: 'Booking 1',
-    location: 'Thuy Khue, Ha Noi',
-    eventType: EventType.FITNESS_ACTIVITIES,
-    proposalDates: [
-      '2020-01-01T12:00:00Z',
-      '2020-01-02T12:00:00Z',
-      '2020-01-03T12:00:00Z',
-    ],
-    status: BookingStatus.PENDING_REVIEW,
-  },
-  {
-    id: '2',
-    name: 'Booking 2',
-    location: 'Dong Anh, Ha Noi',
-    eventType: EventType.FITNESS_ACTIVITIES,
-    proposalDates: [
-      '2020-01-01T12:00:00Z',
-      '2020-01-02T12:00:00Z',
-      '2020-01-03T12:00:00Z',
-    ],
-    status: BookingStatus.APPROVED,
-  },
-  {
-    id: '3',
-    name: 'Booking 1',
-    location: 'Vo Chi Cong, Ha Noi',
-    eventType: EventType.FITNESS_ACTIVITIES,
-    proposalDates: [
-      '2020-01-01T12:00:00Z',
-      '2020-01-02T12:00:00Z',
-      '2020-01-03T12:00:00Z',
-    ],
-    status: BookingStatus.REJECTED,
-  },
-]
-
-const BookingStatusOptions = {
-  [BookingStatus.PENDING_REVIEW]: {
-    color: 'blue',
-    label: 'BOOKING/PENDING_REVIEW',
-  },
-  [BookingStatus.APPROVED]: {
-    color: 'green',
-    label: 'BOOKING/APPROVED',
-  },
-  [BookingStatus.REJECTED]: {
-    color: 'red',
-    label: 'BOOKING/REJECTED',
-  },
-}
 
 const BookingPage = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { refetch } = useGetBookings()
-  const { mutate: deleteBooking } = useDeleteBooking()
+  const me = useAppState(state => state.getMe)
+  const [isModalVisible, setIsModalVisible] = useState(false)
+  const [selectedBooking, setSelectedBooking] = useState<IBooking | null>()
+  const [modalType, setModalType] = useState<BookingStatus | null>()
+  const { mutate: approveBooking } = useApproveBooking()
+  const { mutate: rejectBooking } = useRejectBooking()
+  const { mutate: cancelBooking } = useCancelBooking()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const page = Number(searchParams.get('page')) || 1
+  const pageSize = Number(searchParams.get('pageSize')) || 10
+  const { data, refetch, isLoading } = useGetBookings({}, { page, pageSize })
 
-  const onDelete = (id: string) => {
-    deleteBooking(id, {
-      onSuccess: () => {
-        message.success('Success')
-        refetch()
+  const onApproveBooking = (id?: string, selectedDate?: string) => {
+    approveBooking(
+      {
+        data: {
+          id,
+          selectedDate,
+        },
       },
+      {
+        onSuccess: () => {
+          message.success('Success')
+          refetch()
+        },
+      }
+    )
+  }
+
+  const onRejectBooking = (id?: string, rejectReason?: string) => {
+    rejectBooking(
+      {
+        data: {
+          id,
+          rejectReason,
+        },
+      },
+      {
+        onSuccess: () => {
+          message.success('Success')
+          refetch()
+        },
+      }
+    )
+  }
+
+  const onCancelBooking = (id?: string) => {
+    cancelBooking(
+      {
+        data: {
+          id,
+        },
+      },
+      {
+        onSuccess: () => {
+          message.success('Success')
+          refetch()
+        },
+      }
+    )
+  }
+
+  const onOpenModal = (booking: IBooking, modalType: BookingStatus) => {
+    setSelectedBooking(booking)
+    setIsModalVisible(true)
+    setModalType(modalType)
+  }
+
+  const onCloseModal = () => {
+    setIsModalVisible(false)
+    setSelectedBooking(null)
+    setModalType(null)
+  }
+
+  const onConfirm = (value?: string) => {
+    if (!value) {
+      return
+    }
+
+    if (modalType === BookingStatus.APPROVED) {
+      onApproveBooking(selectedBooking?.id, value)
+    } else if (modalType === BookingStatus.REJECTED) {
+      onRejectBooking(selectedBooking?.id, value)
+    }
+    onCloseModal()
+  }
+
+  const onTableChange = (pagination: TablePaginationConfig) => {
+    setSearchParams({
+      page: pagination.current?.toString() ?? '1',
+      pageSize: pagination.pageSize?.toString() ?? '10',
     })
   }
 
-  const columns: ColumnsType<IBooking> = [
+  let columns: ColumnsType<IBooking> = [
     {
-      title: 'Id',
-      dataIndex: 'id',
+      title: t(BOOKING.TABLE_TITLE_INDEX),
+      width: 30,
+      align: 'center',
+      render: (text, record, index) =>
+        data?.data && (data.data.page - 1) * data.data.pageSize + index + 1,
+    },
+    {
+      title: t(BOOKING.TABLE_TITLE_ID),
       width: 50,
+      dataIndex: 'id',
+      ellipsis: true,
     },
     {
-      title: 'Name',
-      dataIndex: 'name',
-      width: 100,
-    },
-    {
-      title: 'Status',
+      title: t(BOOKING.TABLE_TITLE_EVENT_TYPE),
       dataIndex: 'status',
       align: 'center',
       width: 80,
-      render: (status: BookingStatus) =>
+      render: (status: BookingStatus | undefined) =>
+        status &&
         BookingStatusOptions[status] && (
           <Tag color={BookingStatusOptions[status].color}>
             {t(BookingStatusOptions[status].label)}
@@ -103,57 +159,133 @@ const BookingPage = () => {
         ),
     },
     {
-      title: 'Location',
+      title: t(BOOKING.TABLE_TITLE_LOCATION),
+      dataIndex: 'eventType',
+      align: 'center',
+      width: 80,
+      render: (eventType: EventType | undefined) =>
+        eventType &&
+        EventTypeOptions[eventType] && (
+          <Tag color="default">{t(EventTypeOptions[eventType].label)}</Tag>
+        ),
+    },
+    {
+      title: t(BOOKING.TABLE_TITLE_PROPOSAL_DATE),
       dataIndex: 'location',
       ellipsis: true,
       width: 150,
     },
     {
-      title: 'Proposal Date',
+      title: t(BOOKING.TABLE_TITLE_CREATED_BY),
       dataIndex: 'proposalDates',
-      width: 100,
-      render: (value: string[], record) => (
+      width: 120,
+      render: (value: string[] | undefined, record) => (
         <Space direction="vertical">
-          {value.map((date, i) => (
+          {value?.map((date, i) => (
             <Space key={i} size={0.5}>
-              <Tag color="blue">{format(new Date(date), DATE_FORMAT)}</Tag>
-              <Tag color="geekblue">{format(new Date(date), TIME_FORMAT)}</Tag>
+              <Tag color={date === record.selectedDate ? 'green' : 'geekblue'}>
+                {moment(date).format(DATE_FORMAT)}
+              </Tag>
+              <Tag color={date === record.selectedDate ? 'green' : 'geekblue'}>
+                {moment(date).format(TIME_FORMAT)}
+              </Tag>
+              {date === record.selectedDate && (
+                <CheckCircleTwoTone twoToneColor="#52c41a" />
+              )}
             </Space>
           ))}
         </Space>
       ),
     },
     {
-      title: 'Function',
+      title: t(BOOKING.TABLE_TITLE_REASON_REJECTION),
+      dataIndex: 'rejectReason',
+      width: 120,
+      ellipsis: true,
+    },
+    {
+      title: t(BOOKING.TABLE_TITLE_FUNCTION),
       width: 100,
       fixed: 'right',
-      render: (value, record) => (
+      render: (_, record) => (
         <Space>
-          <Button type="primary" onClick={() => {}}>
-            <CheckOutlined />
-          </Button>
-          <Popconfirm
-            placement="top"
-            title={t(COMMON.CONFIRM_DELETE)}
-            onConfirm={() => onDelete(record.id ?? '')}
-            okText={t(COMMON.ACCEPT)}
-            cancelText={t(COMMON.CANCEL)}
-          >
-            <Button type="primary" danger>
-              <CloseOutlined />
-            </Button>
-          </Popconfirm>
+          {me?.role === Role.ADMIN &&
+            record.status === BookingStatus.PENDING_REVIEW && (
+              <>
+                <Tooltip title={t(BOOKING.APPROVE)}>
+                  <Button
+                    type="primary"
+                    onClick={() => onOpenModal(record, BookingStatus.APPROVED)}
+                  >
+                    <CheckOutlined />
+                  </Button>
+                </Tooltip>
+                <Tooltip title={t(BOOKING.REJECT)}>
+                  <Button
+                    type="primary"
+                    danger
+                    onClick={() => onOpenModal(record, BookingStatus.REJECTED)}
+                  >
+                    <CloseOutlined />
+                  </Button>
+                </Tooltip>
+              </>
+            )}
+          <Tooltip title={t(BOOKING.CANCEL)}>
+            <Popconfirm
+              placement="top"
+              title={t(COMMON.CONFIRM_CANCEL)}
+              onConfirm={() => onCancelBooking(record.id)}
+              okText={t(COMMON.ACCEPT)}
+              cancelText={t(COMMON.CANCEL)}
+            >
+              <Button type="default" danger>
+                <DeleteOutlined />
+              </Button>
+            </Popconfirm>
+          </Tooltip>
         </Space>
       ),
     },
   ]
+
+  if (me?.role === Role.ADMIN) {
+    columns.splice(columns.length - 2, 0, {
+      title: 'Created By',
+      dataIndex: 'user',
+      width: 100,
+      render: (user: IGetMe | undefined) => {
+        return user?.email
+      },
+    })
+  }
 
   return (
     <Space className={styles.container} direction="vertical">
       <Button type="primary" onClick={() => navigate('create')}>
         <PlusOutlined /> {t(COMMON.CREATE)}
       </Button>
-      <Table dataSource={mockData} columns={columns} scroll={{ x: 'auto' }} />
+      <Table
+        dataSource={data?.data.data}
+        columns={columns}
+        scroll={{ x: 'auto' }}
+        rowKey={record => record.id ?? ''}
+        pagination={{
+          current: data?.data.page,
+          pageSize: data?.data.pageSize,
+          total: data?.data.total,
+          showSizeChanger: true,
+        }}
+        onChange={onTableChange}
+        loading={isLoading}
+      />
+      <BookingModal
+        isVisible={isModalVisible}
+        handleCancel={onCloseModal}
+        modalType={modalType}
+        booking={selectedBooking}
+        handleOk={onConfirm}
+      />
     </Space>
   )
 }

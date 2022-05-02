@@ -45,16 +45,21 @@ interface IGetMe {
   email: string
   hash: string
   firstName?: string
-  lasttName?: string
+  lastName?: string
   role: import('constants/enum').Role
   createdAt: string
   updatedAt: string
 }
 
+interface IResponsePagination<T> {
+  data: T[]
+  page: number
+  pageSize: number
+  total: number
+}
+
 interface IBooking {
   id?: string
-  name?: string
-  description?: string
   location?: string
   proposalDates?: string[]
   selectedDate?: string
@@ -70,4 +75,20 @@ interface IBookingRequest {
   proposalDates?: string[]
   selectedDate?: string
   eventType?: import('constants/enum').EventType
+  rejectReason?: string
+}
+
+interface IApproveBookingRequest {
+  id?: string
+  selectedDate?: string
+}
+
+interface IRejectBookingRequest {
+  id?: string
+  rejectReason?: string
+}
+
+interface ICancelBookingRequest {
+  id?: string
+  selectedDate?: string
 }

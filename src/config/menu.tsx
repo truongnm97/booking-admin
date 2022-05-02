@@ -1,8 +1,8 @@
 import { AdminRoutes, BookingRoutes } from 'constants/enum'
 import { BOOKING, MENU } from 'constants/locales'
-import { BookingPage, DashboardPage } from 'pages'
+import { BookingPage } from 'pages'
 import { getFlatMap, getMap } from 'utils/array'
-import { DashboardOutlined, ReadOutlined } from '@ant-design/icons'
+import { ReadOutlined } from '@ant-design/icons'
 import BookingForm from 'pages/Booking/form'
 
 export const WHITELIST_ROUTES: string[] = [
@@ -13,15 +13,6 @@ export const WHITELIST_ROUTES: string[] = [
 ]
 
 export const MenuConfig: IMenu[] = [
-  {
-    id: AdminRoutes.DASHBOARD,
-    path: AdminRoutes.DASHBOARD,
-    name: MENU.DASHBOARD,
-    subTitle: MENU.DASHBOARD,
-    auth: true,
-    component: <DashboardPage />,
-    icon: <DashboardOutlined />,
-  },
   {
     id: AdminRoutes.BOOKING,
     path: AdminRoutes.BOOKING,
