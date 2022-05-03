@@ -5,6 +5,7 @@ import { Navigate, useNavigate } from 'react-router-dom'
 import { useAppState } from 'hooks'
 import { useTranslation } from 'react-i18next'
 import React from 'react'
+import styles from './styles.module.scss'
 
 interface Props {
   reverse?: boolean
@@ -26,8 +27,10 @@ const AuthWrapper: React.FC<Props> = ({
   const isAuthenticated = Boolean(token)
   const isAccessible = reverse ? !isAuthenticated : isAuthenticated
 
-  const unauthorizeElement =
-    getMe != null ? (
+  return isAccessible ? (
+    isAuthorized ? (
+      <main>{children}</main>
+    ) : getMe != null ? (
       <Result
         status="403"
         title="403"
@@ -39,19 +42,21 @@ const AuthWrapper: React.FC<Props> = ({
         }
       />
     ) : (
-      <Spin size="large" />
-    )
-
-  return isAccessible ? (
-    isAuthorized ? (
-      <main>{children}</main>
-    ) : (
-      unauthorizeElement
+      <Spin size="large" className={styles.spin} />
     )
   ) : isAuthorized ? (
     <Navigate to={isAuthenticated ? redirect : AdminRoutes.LOGIN} />
   ) : (
-    unauthorizeElement
+    <Result
+      status="403"
+      title="403"
+      subTitle={t(COMMON.UNAUTHORIZE_PAGE)}
+      extra={
+        <Button type="primary" onClick={() => navigate(redirect)}>
+          {t(COMMON.BACK_HOME)}
+        </Button>
+      }
+    />
   )
 }
 

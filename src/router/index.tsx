@@ -3,8 +3,9 @@ import { AuthWrapper, Container } from 'components/common'
 import { Button, Result } from 'antd'
 import { COMMON } from 'constants/locales'
 import { LoginPage } from 'pages'
-import { MenuConfig, WHITELIST_ROUTES } from 'config/menu'
+import { MenuConfig } from 'config/menu'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
+import { checkAuthorization } from 'utils/auth'
 import { useAppState } from 'hooks'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -18,9 +19,7 @@ function Router() {
   const renderRoutes = useCallback(
     (_menu: IMenu[]) =>
       _menu.map(val => {
-        const isAuthorized =
-          WHITELIST_ROUTES.includes(val.id) ||
-          (me?.role && val.role?.includes(me.role))
+        const isAuthorized = checkAuthorization(val, me?.role)
 
         return val.children ? (
           <Route

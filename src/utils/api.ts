@@ -32,7 +32,7 @@ export const getHeaders = () => {
 
   return authToken
     ? {
-        // Authorization: `Bearer ${authToken}`,
+        Authorization: `Bearer ${authToken}`,
       }
     : null
 }

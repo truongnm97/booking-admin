@@ -17,17 +17,18 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import { LogoSVG } from 'assets/svg'
-import { MenuConfig, MenuConfigMap, WHITELIST_ROUTES } from 'config/menu'
+import { MenuConfig, MenuConfigMap } from 'config/menu'
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons'
 import { authActions } from 'redux/actions'
+import { checkAuthorization } from 'utils/auth'
 import { getMeAction } from 'redux/actions/auth'
 import { useAppState } from 'hooks'
-import { useCallback, useEffect, useState } from 'react'
 import { useDispatch } from 'react-redux'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import clsx from 'clsx'
 import styles from './styles.module.scss'
@@ -44,52 +45,50 @@ const Container = () => {
   const token = useAppState(state => state.auth)
   const me = useAppState(state => state.getMe)
 
-  const renderMenu = useCallback(
-    (_menu?: IMenu[], _path?: string) =>
-      _menu?.map(val => {
-        const path = _path ? `${_path}/${val.path}` : val.path
+  const renderMenu = (_menu?: IMenu[], _path?: string) =>
+    _menu?.map(val => {
+      const path = _path ? `${_path}/${val.path}` : val.path
 
-        const isAuthorized =
-          WHITELIST_ROUTES.includes(val.id) ||
-          (me?.role && val.role?.includes(me.role))
+      const isAuthorized = checkAuthorization(val, me?.role)
 
-        return val.hide ? null : val.children ? (
-          <Menu.SubMenu
-            key={val.id}
-            icon={val.icon}
-            title={val.name && t(val.name)}
-          >
-            {renderMenu(val.children, path)}
-          </Menu.SubMenu>
-        ) : isAuthorized ? (
-          <Menu.Item key={val.id} icon={val.icon}>
-            <Link to={path ?? '/'}>{val.name && t(val.name)}</Link>
-          </Menu.Item>
-        ) : null
-      }),
-    [me]
-  )
+      return val.hide ? null : val.children ? (
+        <Menu.SubMenu
+          key={val.id}
+          icon={val.icon}
+          title={val.name && t(val.name)}
+        >
+          {renderMenu(val.children, path)}
+        </Menu.SubMenu>
+      ) : isAuthorized ? (
+        <Menu.Item key={val.id} icon={val.icon}>
+          <Link to={path ?? '/'}>{val.name && t(val.name)}</Link>
+        </Menu.Item>
+      ) : null
+    })
 
-  const renderBreadcrumb = useCallback(
-    (_menu?: IMenu[]) => {
-      const pathSnippets = pathname
-        .split('/')
-        .filter(Boolean)
-        .map((val, idx) => (idx === 0 ? `/${val}` : val))
+  const renderBreadcrumb = (_menu?: IMenu[]) => {
+    const pathSnippets = pathname
+      .split('/')
+      .filter(Boolean)
+      .map((val, idx) => (idx === 0 ? `/${val}` : val))
 
-      return (
-        <Breadcrumb>
-          {pathSnippets?.map(val => {
-            const title = MenuConfigMap[val]?.name
-            return (
-              <Breadcrumb.Item key={val}>{title && t(title)}</Breadcrumb.Item>
+    return (
+      <Breadcrumb>
+        {pathSnippets?.map(val => {
+          const menuItem = MenuConfigMap[val]
+          const isAuthorized = checkAuthorization(menuItem, me?.role)
+
+          return (
+            isAuthorized && (
+              <Breadcrumb.Item key={val}>
+                {menuItem.name && t(menuItem.name)}
+              </Breadcrumb.Item>
             )
-          })}
-        </Breadcrumb>
-      )
-    },
-    [pathname]
-  )
+          )
+        })}
+      </Breadcrumb>
+    )
+  }
 
   const onLogout = () => {
     dispatch(authActions.logoutAction.request())
@@ -122,6 +121,12 @@ const Container = () => {
       const path = _path ? `${_path}/${val.path}` : val.path
 
       if (matchPath(path ?? '', pathname)) {
+        const isAuthorized = checkAuthorization(val, me?.role)
+
+        if (!isAuthorized) {
+          break
+        }
+
         setSelectedMenu(val)
         break
       }
@@ -134,7 +139,7 @@ const Container = () => {
 
   useEffect(() => {
     findSelectedMenu(MenuConfig)
-  }, [pathname])
+  }, [pathname, me])
 
   useEffect(() => {
     if (token) {
@@ -186,15 +191,19 @@ const Container = () => {
                 </span>
               </Dropdown>
             </div>
-            <Dropdown overlay={menu} className={styles.account}>
-              <Space>
-                <span>
-                  <span>Hi, </span>
-                  <span>{`${me?.firstName ?? ''} ${me?.lastName ?? ''}`}</span>
-                </span>
-                <Avatar />
-              </Space>
-            </Dropdown>
+            {token && (
+              <Dropdown overlay={menu} className={styles.account}>
+                <Space>
+                  <span>
+                    <span>Hi, </span>
+                    <span>{`${me?.firstName ?? ''} ${
+                      me?.lastName ?? ''
+                    }`}</span>
+                  </span>
+                  <Avatar />
+                </Space>
+              </Dropdown>
+            )}
           </Space>
         </Header>
         <Content className={styles.content}>
