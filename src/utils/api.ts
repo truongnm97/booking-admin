@@ -1,4 +1,5 @@
 import { encodeQueryParams } from './encoding'
+import { logoutAction } from 'redux/actions/auth'
 import { message } from 'antd'
 import axios, { AxiosRequestConfig, AxiosResponse } from 'axios'
 import store from 'redux/store'
@@ -74,9 +75,13 @@ export const invokeApi = async ({
 
     return res.data
   } catch (err) {
-    console.error((<IResponseError>err).response.data?.message)
-    message.error((<IResponseError>err).response.data?.message)
-    return new Error((<IResponseError>err).response.data?.message)
+    const res = (<IResponseError>err).response
+    if (res.status === 401) {
+      store.dispatch(logoutAction.request())
+    }
+    console.error(res.data?.message)
+    message.error(res.data?.message)
+    throw err
   }
 }
 
@@ -88,13 +93,24 @@ export default async function authRequest<
   Response = IResponse,
   Request = unknown
 >(url: string, config: AxiosRequestConfig<Request>) {
-  return axiosProvider({
-    ...config,
-    headers: {
-      ...getHeaders(),
-      ...config.headers,
-    },
-    url,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  }) as Promise<any>
+  try {
+    const res = await axiosProvider({
+      ...config,
+      headers: {
+        ...getHeaders(),
+        ...config.headers,
+      },
+      url,
+    })
+
+    return res
+  } catch (err) {
+    const res = (<IResponseError>err).response
+    if (res.status === 401) {
+      store.dispatch(logoutAction.request())
+    }
+    console.error(res.data?.message)
+    message.error(res.data?.message)
+    throw err
+  }
 }

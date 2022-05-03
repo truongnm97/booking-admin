@@ -7,6 +7,7 @@ import { MenuConfig } from 'config/menu'
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom'
 import { checkAuthorization } from 'utils/auth'
 import { useAppState } from 'hooks'
+import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 
@@ -15,40 +16,43 @@ function Router() {
   const navigate = useNavigate()
   const me = useAppState(state => state.getMe)
 
-  const renderRoutes = (_menu: IMenu[]) =>
-    _menu.map(val => {
-      const isAuthorized = checkAuthorization(val, me?.role)
+  const renderRoutes = useCallback(
+    (_menu: IMenu[]) =>
+      _menu.map(val => {
+        const isAuthorized = checkAuthorization(val, me?.role)
 
-      return val.children ? (
-        <Route
-          key={val.id}
-          path={val.path}
-          element={
-            val.auth ? (
-              <AuthWrapper>{val.component ?? <Outlet />}</AuthWrapper>
-            ) : (
-              val.component ?? <Outlet />
-            )
-          }
-        >
-          {renderRoutes(val.children)}
-        </Route>
-      ) : (
-        <Route
-          key={val.id}
-          path={val.path}
-          element={
-            val.auth ? (
-              <AuthWrapper isAuthorized={isAuthorized}>
-                {val.component}
-              </AuthWrapper>
-            ) : (
-              val.component
-            )
-          }
-        />
-      )
-    })
+        return val.children ? (
+          <Route
+            key={val.id}
+            path={val.path}
+            element={
+              val.auth ? (
+                <AuthWrapper>{val.component ?? <Outlet />}</AuthWrapper>
+              ) : (
+                val.component ?? <Outlet />
+              )
+            }
+          >
+            {renderRoutes(val.children)}
+          </Route>
+        ) : (
+          <Route
+            key={val.id}
+            path={val.path}
+            element={
+              val.auth ? (
+                <AuthWrapper isAuthorized={isAuthorized}>
+                  {val.component}
+                </AuthWrapper>
+              ) : (
+                val.component
+              )
+            }
+          />
+        )
+      }),
+    [me]
+  )
 
   return (
     <Routes>

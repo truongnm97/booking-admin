@@ -1,6 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Method } from 'constants/enum'
-import { message } from 'antd'
 import { useMutation, useQueryClient } from 'react-query'
 import { useQuery } from 'react-query'
 import authRequest from 'utils/api'
@@ -18,9 +17,6 @@ export function useGetBookings(
     },
     {
       ...request?.queryConfig,
-      onError: err => {
-        message.error((err as Error).message)
-      },
     }
   )
 }
@@ -37,9 +33,6 @@ export function useCreateBooking() {
     onSuccess: (data, variables) => {
       void queryClient.setQueryData([url, Method.POST, variables], { data })
     },
-    onError: err => {
-      message.error(err.message)
-    },
   })
 }
 export function useDeleteBooking() {
@@ -51,9 +44,6 @@ export function useDeleteBooking() {
     {
       onSuccess: (data, variables) => {
         void queryClient.setQueryData([url, Method.POST], { data })
-      },
-      onError: err => {
-        message.error(err.response?.data?.message)
       },
     }
   )
@@ -71,10 +61,6 @@ export function useEditBooking(id?: string) {
     onSuccess: (data, variables) => {
       void queryClient.setQueryData([url, Method.POST, variables], { data })
     },
-
-    onError: err => {
-      message.error(err.response?.data?.message)
-    },
   })
 }
 
@@ -86,9 +72,6 @@ export function useGetBooking(id?: string, request?: IFetcherRequest) {
     () => authRequest(url, { method: Method.GET }),
     {
       ...request?.queryConfig,
-      onError: err => {
-        message.error((err as Error).message)
-      },
     }
   )
 }
@@ -108,10 +91,6 @@ export function useApproveBooking() {
     {
       onSuccess: (data, variables) => {
         void queryClient.setQueryData([url, Method.POST, variables], { data })
-      },
-
-      onError: err => {
-        message.error(err.response?.data?.message)
       },
     }
   )
@@ -133,10 +112,6 @@ export function useRejectBooking() {
       onSuccess: (data, variables) => {
         void queryClient.setQueryData([url, Method.POST, variables], { data })
       },
-
-      onError: err => {
-        message.error(err.response?.data?.message)
-      },
     }
   )
 }
@@ -156,10 +131,6 @@ export function useCancelBooking() {
     {
       onSuccess: (data, variables) => {
         void queryClient.setQueryData([url, Method.POST, variables], { data })
-      },
-
-      onError: err => {
-        message.error(err.response?.data?.message)
       },
     }
   )
