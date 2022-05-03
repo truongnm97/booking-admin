@@ -27,7 +27,7 @@ export const logoutAction = {
 
 export const getMeAction = {
   request: createAction<undefined, '@AUTH/GET_ME'>('@AUTH/GET_ME'),
-  success: createAction<IGetMe, '@AUTH/GET_ME/SUCCESS'>('@AUTH/GET_ME/SUCCESS'),
+  success: createAction<IUser, '@AUTH/GET_ME/SUCCESS'>('@AUTH/GET_ME/SUCCESS'),
   failure: createAction<Error, '@AUTH/GET_ME/FAILURE'>('@AUTH/GET_ME/FAILURE'),
   cancel: createAction<undefined, '@AUTH/GET_ME/CANCEL'>('@AUTH/GET_ME/CANCEL'),
 }

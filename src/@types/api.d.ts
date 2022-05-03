@@ -1,6 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface IResponse<T = any> {
   data?: T
-  status?: number
+  status?: import('constants/enum').HttpStatus
   code?: string
   message?: string
 }
@@ -8,7 +9,7 @@ interface IResponse<T = any> {
 interface IError {
   error: string
   message: string
-  statusCode: number
+  statusCode: import('constants/enum').HttpStatus
 }
 
 interface IResponseError {
@@ -40,7 +41,7 @@ interface ILoginResponse {
   access_token: string
 }
 
-interface IGetMe {
+interface IUser {
   id?: string
   email: string
   hash: string
@@ -49,6 +50,14 @@ interface IGetMe {
   role: import('constants/enum').Role
   createdAt: string
   updatedAt: string
+}
+
+interface IUserRequest {
+  email?: string
+  password?: string
+  firstName?: string
+  lastName?: string
+  role?: import('constants/enum').Role
 }
 
 interface IResponsePagination<T> {

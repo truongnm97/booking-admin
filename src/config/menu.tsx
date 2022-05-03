@@ -3,14 +3,17 @@ import {
   BookingRoutes,
   EventTypeRoutes,
   Role,
+  UserRoutes,
 } from 'constants/enum'
-import { BOOKING, EVENT_TYPE, MENU } from 'constants/locales'
+import { BOOKING, EVENT_TYPE, MENU, USER } from 'constants/locales'
 import { BookingPage } from 'pages'
 import { getFlatMap, getMap } from 'utils/array'
-import { ReadOutlined, ScheduleOutlined } from '@ant-design/icons'
+import { ReadOutlined, ScheduleOutlined, UserOutlined } from '@ant-design/icons'
 import BookingForm from 'pages/Booking/form'
 import EventTypePage from 'pages/EventType'
 import EventTypeForm from 'pages/EventType/form'
+import UserPage from 'pages/User'
+import UserForm from 'pages/User/form'
 
 export const WHITELIST_ROUTES: string[] = []
 
@@ -73,6 +76,36 @@ export const MenuConfig: IMenu[] = [
     auth: true,
     hide: true,
     component: <EventTypeForm />,
+    role: [Role.ADMIN],
+  },
+  {
+    id: AdminRoutes.USER,
+    path: AdminRoutes.USER,
+    name: MENU.USER,
+    subTitle: USER.DETAIL,
+    auth: true,
+    component: <UserPage />,
+    icon: <UserOutlined />,
+    role: [Role.ADMIN],
+  },
+  {
+    id: UserRoutes.USER_CREATE,
+    path: UserRoutes.USER_CREATE,
+    name: USER.CREATE,
+    subTitle: USER.CREATE_DETAIL,
+    auth: true,
+    hide: true,
+    component: <UserForm />,
+    role: [Role.ADMIN],
+  },
+  {
+    id: UserRoutes.USER_EDIT,
+    path: `${UserRoutes.USER_EDIT}/:id`,
+    name: USER.EDIT,
+    subTitle: USER.EDIT_DETAIL,
+    auth: true,
+    hide: true,
+    component: <UserForm />,
     role: [Role.ADMIN],
   },
 ]

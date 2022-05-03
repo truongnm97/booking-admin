@@ -1,3 +1,4 @@
+import { HttpStatus } from 'constants/enum'
 import { encodeQueryParams } from './encoding'
 import { logoutAction } from 'redux/actions/auth'
 import { message } from 'antd'
@@ -76,7 +77,7 @@ export const invokeApi = async ({
     return res.data
   } catch (err) {
     const res = (<IResponseError>err).response
-    if (res.status === 401) {
+    if (res.status === HttpStatus.UNAUTHORIZED) {
       store.dispatch(logoutAction.request())
     }
     console.error(res.data?.message)
@@ -106,7 +107,7 @@ export default async function authRequest<
     return res
   } catch (err) {
     const res = (<IResponseError>err).response
-    if (res.status === 401) {
+    if (res.status === HttpStatus.UNAUTHORIZED) {
       store.dispatch(logoutAction.request())
     }
     console.error(res.data?.message)

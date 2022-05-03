@@ -1,6 +1,5 @@
 import { AxiosRequestConfig, AxiosResponse } from 'axios'
 import { Method } from 'constants/enum'
-import { message } from 'antd'
 import { useMutation, useQueryClient } from 'react-query'
 import { useQuery } from 'react-query'
 import authRequest from 'utils/api'
@@ -15,9 +14,6 @@ export function useGetEventTypes(request?: IFetcherRequest) {
     },
     {
       ...request?.queryConfig,
-      onError: err => {
-        message.error((err as Error).message)
-      },
     }
   )
 }
@@ -34,9 +30,6 @@ export function useCreateEventType() {
     onSuccess: (data, variables) => {
       void queryClient.setQueryData([url, Method.POST, variables], { data })
     },
-    onError: err => {
-      message.error(err.message)
-    },
   })
 }
 export function useDeleteEventType() {
@@ -48,9 +41,6 @@ export function useDeleteEventType() {
     {
       onSuccess: (data, variables) => {
         void queryClient.setQueryData([url, Method.POST], { data })
-      },
-      onError: err => {
-        message.error(err.response?.data?.message)
       },
     }
   )
@@ -68,10 +58,6 @@ export function useEditEventType(id?: string) {
     onSuccess: (data, variables) => {
       void queryClient.setQueryData([url, Method.POST, variables], { data })
     },
-
-    onError: err => {
-      message.error(err.response?.data?.message)
-    },
   })
 }
 
@@ -83,9 +69,6 @@ export function useGetEventType(id?: string, request?: IFetcherRequest) {
     () => authRequest(url, { method: Method.GET }),
     {
       ...request?.queryConfig,
-      onError: err => {
-        message.error((err as Error).message)
-      },
     }
   )
 }

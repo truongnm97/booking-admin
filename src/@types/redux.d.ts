@@ -1,6 +1,6 @@
 interface IAuthReducer extends ILoginResponse {}
 
-interface IGetMeReducer extends IGetMe {}
+interface IGetMeReducer extends IUser {}
 
 interface IAppState {
   auth: string | null

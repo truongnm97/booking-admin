@@ -274,7 +274,7 @@ const BookingPage = () => {
       title: t(BOOKING.TABLE_TITLE_CREATED_BY),
       dataIndex: 'user',
       width: 100,
-      render: (user: IGetMe | undefined) => {
+      render: (user: IUser | undefined) => {
         return user?.email
       },
     })
