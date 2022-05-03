@@ -17,13 +17,14 @@ import {
   useNavigate,
 } from 'react-router-dom'
 import { LogoSVG } from 'assets/svg'
-import { MenuConfig, MenuConfigMap, WHITELIST_ROUTES } from 'config/menu'
+import { MenuConfig, MenuConfigMap } from 'config/menu'
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PoweroffOutlined,
 } from '@ant-design/icons'
 import { authActions } from 'redux/actions'
+import { checkAuthorization } from 'utils/auth'
 import { getMeAction } from 'redux/actions/auth'
 import { useAppState } from 'hooks'
 import { useDispatch } from 'react-redux'
@@ -48,9 +49,7 @@ const Container = () => {
     _menu?.map(val => {
       const path = _path ? `${_path}/${val.path}` : val.path
 
-      const isAuthorized =
-        WHITELIST_ROUTES.includes(val.id) ||
-        (me?.role && val.role?.includes(me.role))
+      const isAuthorized = checkAuthorization(val, me?.role)
 
       return val.hide ? null : val.children ? (
         <Menu.SubMenu
@@ -76,9 +75,15 @@ const Container = () => {
     return (
       <Breadcrumb>
         {pathSnippets?.map(val => {
-          const title = MenuConfigMap[val]?.name
+          const menuItem = MenuConfigMap[val]
+          const isAuthorized = checkAuthorization(menuItem, me?.role)
+
           return (
-            <Breadcrumb.Item key={val}>{title && t(title)}</Breadcrumb.Item>
+            isAuthorized && (
+              <Breadcrumb.Item key={val}>
+                {menuItem.name && t(menuItem.name)}
+              </Breadcrumb.Item>
+            )
           )
         })}
       </Breadcrumb>
@@ -116,6 +121,12 @@ const Container = () => {
       const path = _path ? `${_path}/${val.path}` : val.path
 
       if (matchPath(path ?? '', pathname)) {
+        const isAuthorized = checkAuthorization(val, me?.role)
+
+        if (!isAuthorized) {
+          break
+        }
+
         setSelectedMenu(val)
         break
       }
@@ -128,7 +139,7 @@ const Container = () => {
 
   useEffect(() => {
     findSelectedMenu(MenuConfig)
-  }, [pathname])
+  }, [pathname, me])
 
   useEffect(() => {
     if (token) {
@@ -180,15 +191,19 @@ const Container = () => {
                 </span>
               </Dropdown>
             </div>
-            <Dropdown overlay={menu} className={styles.account}>
-              <Space>
-                <span>
-                  <span>Hi, </span>
-                  <span>{`${me?.firstName ?? ''} ${me?.lastName ?? ''}`}</span>
-                </span>
-                <Avatar />
-              </Space>
-            </Dropdown>
+            {token && (
+              <Dropdown overlay={menu} className={styles.account}>
+                <Space>
+                  <span>
+                    <span>Hi, </span>
+                    <span>{`${me?.firstName ?? ''} ${
+                      me?.lastName ?? ''
+                    }`}</span>
+                  </span>
+                  <Avatar />
+                </Space>
+              </Dropdown>
+            )}
           </Space>
         </Header>
         <Content className={styles.content}>

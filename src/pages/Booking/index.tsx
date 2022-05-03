@@ -183,10 +183,26 @@ const BookingPage = () => {
         <Space direction="vertical">
           {value?.map((date, i) => (
             <Space key={i} size={0.5}>
-              <Tag color={date === record.selectedDate ? 'green' : 'geekblue'}>
+              <Tag
+                color={
+                  date === record.selectedDate
+                    ? 'green'
+                    : record.status === BookingStatus.REJECTED
+                    ? 'red'
+                    : 'blue'
+                }
+              >
                 {moment(date).format(DATE_FORMAT)}
               </Tag>
-              <Tag color={date === record.selectedDate ? 'green' : 'geekblue'}>
+              <Tag
+                color={
+                  date === record.selectedDate
+                    ? 'green'
+                    : record.status === BookingStatus.REJECTED
+                    ? 'red'
+                    : 'blue'
+                }
+              >
                 {moment(date).format(TIME_FORMAT)}
               </Tag>
               {date === record.selectedDate && (

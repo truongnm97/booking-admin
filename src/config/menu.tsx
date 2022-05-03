@@ -7,7 +7,7 @@ import {
 import { BOOKING, EVENT_TYPE, MENU } from 'constants/locales'
 import { BookingPage } from 'pages'
 import { getFlatMap, getMap } from 'utils/array'
-import { ReadOutlined } from '@ant-design/icons'
+import { ReadOutlined, ScheduleOutlined } from '@ant-design/icons'
 import BookingForm from 'pages/Booking/form'
 import EventTypePage from 'pages/EventType'
 import EventTypeForm from 'pages/EventType/form'
@@ -52,7 +52,7 @@ export const MenuConfig: IMenu[] = [
     subTitle: EVENT_TYPE.DETAIL,
     auth: true,
     component: <EventTypePage />,
-    icon: <ReadOutlined />,
+    icon: <ScheduleOutlined />,
     role: [Role.ADMIN],
   },
   {
